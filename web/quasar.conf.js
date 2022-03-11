@@ -69,6 +69,12 @@ module.exports = configure(function (ctx) {
       chainWebpack (/* chain */) {
         //
       },
+      extendWebpack (cfg) {
+        cfg.module.rules.push({
+          test: /\.pug$/,
+          loader: 'pug-plain-loader'
+        })
+      }
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
