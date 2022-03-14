@@ -11,7 +11,7 @@ import routes from './routes'
  * with the Router instance.
  */
 
-export default route(function (/* { store, ssrContext } */) {
+export default route(function (/* { store, ssrContext } */{ store }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
@@ -24,6 +24,36 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
+  })
+
+  Router.beforeEach(async (to, from, next) => {
+    const isInitAuth = store.state.auth.initComplete
+
+    if(!isInitAuth) {
+      await store.dispatch('auth/initAuth')
+      console.log('auth init !!')
+    }
+    
+    const isLogin = store.state.auth.isLogin
+    
+    const { requireAuth } = to.meta
+
+    if(requireAuth) {
+
+      if(isLogin) {
+        next()
+      } else {
+        next({ name: 'Login'})
+      }
+
+    } else {
+
+      if(isLogin && to.name == 'Login'){
+        next({ name: 'Admin'})
+      } else {
+        next()
+      }
+    }
   })
 
   return Router

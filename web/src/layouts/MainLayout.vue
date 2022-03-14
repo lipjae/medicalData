@@ -15,7 +15,8 @@
           Quasar App
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn label="로그아웃" @click="logout"></q-btn>
+        <div></div>
       </q-toolbar>
     </q-header>
 
@@ -94,6 +95,8 @@ const linksList = [
 ];
 
 import { defineComponent, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'MainLayout',
@@ -104,13 +107,24 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
+    const store = useStore()
+    const router = useRouter()
+
+    const logout = async () => {
+      store.dispatch('auth/logout').then(() => {
+        router.push('/')
+      })
+    }
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+
+      // method
+      logout
     }
   }
 })
